@@ -19,10 +19,10 @@ export class CreateBookDto {
   readonly price: number;
 
   @IsNotEmpty()
-  @IsEnum(Category)
+  @IsEnum(Category, { message: 'Please enter a valid category.' })
   readonly category: Category;
 
   @IsNotEmpty()
-  @IsEnum(StatusType)
+  @IsEnum(StatusType, { message: 'Please enter a valid status.' })
   readonly status: StatusType;
 }

@@ -12,7 +12,7 @@ import { BookModule } from './book/book.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.DB_URI),
-    BookModule
+    BookModule,
   ],
   controllers: [AppController],
   providers: [AppService],

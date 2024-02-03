@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './schema/book.schema';
+import { Query as ExpressQuery } from 'express-serve-static-core';
 
 @Controller('book')
 @ApiTags('books')
@@ -16,8 +26,8 @@ export class BookController {
   }
 
   @Get()
-  async findAll(): Promise<Book[]> {
-    return this.bookService.findAll();
+  async findAll(@Query() query: ExpressQuery): Promise<Book[]> {
+    return this.bookService.findAll(query);
   }
 
   @Get(':id')

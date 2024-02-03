@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -11,8 +12,10 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('books')
     .build();
-  const document = SwaggerModule.createDocument(app,   config);
+  const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('documentation', app, document);
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(3000);
 }
