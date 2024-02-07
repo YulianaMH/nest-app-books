@@ -7,8 +7,11 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -21,8 +24,9 @@ export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Post()
-  async create(@Body() book: CreateBookDto): Promise<Book> {
-    return this.bookService.create(book);
+  @UseGuards(AuthGuard())
+  async create(@Body() book: CreateBookDto, @Req() req): Promise<Book> {
+    return this.bookService.create(book, req.user);
   }
 
   @Get()

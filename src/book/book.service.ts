@@ -6,16 +6,16 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Query } from 'express-serve-static-core';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './schema/book.schema';
+import { User } from '../auth/schemas/user.schema';
 
 @Injectable()
 export class BookService {
   constructor(@InjectModel(Book.name) private bookModel: Model<Book>) {}
 
-  async create(createBookDto: CreateBookDto): Promise<Book> {
-    return await this.bookModel.create(createBookDto);
+  async create(book: Book, user: User): Promise<Book> {
+    const data = Object.assign(book, { user: user._id });
+    return await this.bookModel.create(data);
   }
 
   async findAll(query: Query): Promise<Book[]> {
@@ -51,7 +51,7 @@ export class BookService {
     return book;
   }
 
-  async update(id: string, book: UpdateBookDto): Promise<Book> {
+  async update(id: string, book: Book): Promise<Book> {
     return await this.bookModel.findByIdAndUpdate(id, book, {
       new: true,
       runValidators: true,
