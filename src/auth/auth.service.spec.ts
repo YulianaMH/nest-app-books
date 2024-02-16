@@ -1,27 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { User } from './schemas/user.schema';
-import { JwtService } from '@nestjs/jwt';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
   let model: Model<User>;
   let jwtService: JwtService;
+
   const token = 'jwtToken';
-
-  const mockUserService = {
-    create: jest.fn(),
-    findOne: jest.fn(),
-  };
-
   const mockUser: any = {
     _id: '65c3b4c5233f93d8fd03d33a',
     name: 'yuliana',
     email: 'yuliana@gmail.com',
+  };
+
+  const mockUserModel = {
+    create: jest.fn(),
+    findOne: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -31,7 +31,7 @@ describe('AuthService', () => {
         JwtService,
         {
           provide: getModelToken(User.name),
-          useValue: mockUserService,
+          useValue: mockUserModel,
         },
       ],
     }).compile();
@@ -46,7 +46,7 @@ describe('AuthService', () => {
   });
 
   describe('signUp', () => {
-    const mockUserDto = {
+    const mockSignUpUserDto = {
       name: 'yuliana',
       email: 'yuliana@gmail.com',
       password: '1234',
@@ -59,7 +59,7 @@ describe('AuthService', () => {
         .mockImplementationOnce(() => Promise.resolve(mockUser));
       jest.spyOn(jwtService, 'sign').mockReturnValue(token);
 
-      const result = await service.signUp(mockUserDto);
+      const result = await service.signUp(mockSignUpUserDto);
 
       expect(bcrypt.hash).toHaveBeenCalled();
       expect(result).toEqual({ token });
@@ -70,7 +70,7 @@ describe('AuthService', () => {
         .spyOn(model, 'create')
         .mockImplementationOnce(() => Promise.reject({ code: 11000 })); // duplicate key source code 11000 in Mongo
 
-      await expect(service.signUp(mockUserDto)).rejects.toThrow(
+      await expect(service.signUp(mockSignUpUserDto)).rejects.toThrow(
         ConflictException,
       );
     });
