@@ -37,3 +37,5 @@ lerna-debug.log*
 # Custom
 steps.txt
 .env
+.env.test
+.env.development
